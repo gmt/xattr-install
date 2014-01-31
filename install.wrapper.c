@@ -149,7 +149,7 @@ copyxattr(const char *source, const char *target)
 
 
 static char *
-which(const char *mydir)
+which(const char *mydir, const char *myargv0basename)
 {
 	char *mycandir = realpath(mydir, NULL);  /* canonical value of argv[0]'s dirname */
 	char *path, *env_path = getenv("PATH");  /* full $PATH string                    */
@@ -169,6 +169,11 @@ which(const char *mydir)
 
 	struct stat s;
 
+	/* If we arv0 says we are "install" then we assume that we're in
+	 * a different directory and someone is playing PATH games.
+	 * Otherwise, we don't care. */
+	int different_name = strcmp(myargv0basename, "install");
+
 	dir = strtok_r(path, ":", &savedptr);
 
 	while (dir) {
@@ -181,7 +186,7 @@ which(const char *mydir)
 		/* If argv[0]'s canonical dirname == the path's canonical dirname, then we
 		 * skip this path otheriwise we get into an infinite self-invocation.
 		 */
-		if (!strcmp(mycandir, candir))
+		if ((!different_name) && (!strcmp(mycandir, candir)))
 			goto skip;
 
 		file = path_join(candir, "install");
@@ -230,6 +235,8 @@ main(int argc, char* argv[])
 	struct stat s;                 /* test if a file is a regular file or a directory              */
 
 	char *portage_xattr_exclude;  /* strings of excluded xattr names from $PORTAGE_XATTR_EXCLUDE   */
+
+	char *argv0copy;               /* copy of argv[0] for basename to mangle                       */
 
 	portage_xattr_exclude = getenv("PORTAGE_XATTR_EXCLUDE");
 	if (portage_xattr_exclude == NULL)
@@ -290,7 +297,9 @@ main(int argc, char* argv[])
 			err(1, "fork() failed");
 
 		case 0:
-			install = which(dirname(argv[0]));
+			if (! argv0copy = strdup(argv[0]))
+				err(1, "memory allocation or other wierd problem");
+			install = which(dirname(argv[0]), basename(argv0copy));
 			argv[0] = install;    /* so coreutils' lib/program.c behaves */
 			execv(install, argv); /* The kernel will free(install).      */
 			err(1, "execv() failed");
