@@ -1,0 +1,9 @@
+/Makefile
+/autom4te.cache/
+/config.h
+/config.log
+/config.status
+/install.wrapper.o
+/stamp-h1
+/xattr-install
+/.deps/
