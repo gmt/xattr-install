@@ -8,3 +8,4 @@
 /xattr-install
 /.deps/
 .*.swp
+/tarball/
