@@ -297,7 +297,7 @@ main(int argc, char* argv[])
 			err(1, "fork() failed");
 
 		case 0:
-			if (! argv0copy = strdup(argv[0]))
+			if ((argv0copy = strdup(argv[0])) == NULL)
 				err(1, "memory allocation or other wierd problem");
 			install = which(dirname(argv[0]), basename(argv0copy));
 			argv[0] = install;    /* so coreutils' lib/program.c behaves */
