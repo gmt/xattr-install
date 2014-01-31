@@ -7,3 +7,4 @@ rm -rvf autom4te.cache/ Makefile.in compile configure depcomp install-sh missing
 
 autoreconf --install
 
+rm -rf autom4te.cache/
