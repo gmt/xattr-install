@@ -1,0 +1,4 @@
+xattr-install is a wrapper for coreutil's install which preserves extended attributes.
+
+To use it with your package, click your heels twice and repeat to yourself, "there's no
+place like Gary, Indiana...".
